@@ -1,1384 +1,329 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="color-scheme" content="light dark" />
-  <title>Utkarsh Singh — Personal Startpage (OnePlus Nord CE 5)</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    /* ==========================================================================
-       ADAPTIVE THEME TOKENS (Defaults to Crisp Tactile Light Theme + OS Auto-Sync)
-       ========================================================================== */
-    :root,
-    html[data-theme="light"] {
-      --bg-canvas: #f4f2ed;
-      --bg-surface: rgba(255, 255, 255, 0.84);
-      --bg-surface-solid: #ffffff;
-      --bg-subtle: #ebe8e0;
-      --bg-pill: rgba(24, 24, 27, 0.055);
-      --text-primary: #141413;
-      --text-secondary: #52514e;
-      --text-muted: #82807b;
-      --border-hairline: rgba(20, 20, 19, 0.09);
-      --border-strong: rgba(20, 20, 19, 0.18);
-      --accent-primary: #d94e34; /* OxygenOS / Nothing Terracotta Red */
-      --accent-secondary: #2563eb; /* Cobalt Engineering Blue */
-      --accent-soft: rgba(217, 78, 52, 0.1);
-      --card-shadow: 0 10px 30px -10px rgba(20, 20, 19, 0.07), 0 2px 6px -1px rgba(20, 20, 19, 0.04);
-      --card-shadow-hover: 0 20px 38px -12px rgba(20, 20, 19, 0.13), 0 4px 12px -2px rgba(20, 20, 19, 0.06);
-      --glare-color: rgba(255, 255, 255, 0.65);
-      --bezel-border: #d6d3cb;
-    }
-
-    html[data-theme="dark"] {
-      --bg-canvas: #0c0d10;
-      --bg-surface: rgba(22, 24, 30, 0.82);
-      --bg-surface-solid: #16181e;
-      --bg-subtle: #1e2028;
-      --bg-pill: rgba(255, 255, 255, 0.07);
-      --text-primary: #f3f2ee;
-      --text-secondary: #a8a6a1;
-      --text-muted: #6e6d68;
-      --border-hairline: rgba(255, 255, 255, 0.09);
-      --border-strong: rgba(255, 255, 255, 0.18);
-      --accent-primary: #f05a3e;
-      --accent-secondary: #60a5fa;
-      --accent-soft: rgba(240, 90, 62, 0.15);
-      --card-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.65);
-      --card-shadow-hover: 0 22px 44px -12px rgba(0, 0, 0, 0.8);
-      --glare-color: rgba(255, 255, 255, 0.1);
-      --bezel-border: #262934;
-    }
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-canvas);
-      color: var(--text-primary);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      transition: background-color 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease;
-      overflow-x: hidden;
-      min-height: 100vh;
-    }
-
-    .font-heading {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .font-serif-editorial {
-      font-family: 'Instrument Serif', Georgia, serif;
-    }
-    .font-mono-code {
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    /* Tactile 3D Surface Cards */
-    .perspective-stage {
-      perspective: 1100px;
-      transform-style: preserve-3d;
-    }
-
-    .tactile-card {
-      position: relative;
-      background: var(--bg-surface);
-      backdrop-filter: blur(18px) saturate(150%);
-      -webkit-backdrop-filter: blur(18px) saturate(150%);
-      border: 1px solid var(--border-hairline);
-      box-shadow: var(--card-shadow);
-      transform-style: preserve-3d;
-      transition: transform 0.2s cubic-bezier(0.2, 0.85, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.3s ease;
-      will-change: transform;
-    }
-
-    .tactile-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--card-shadow-hover);
-    }
-
-    .tactile-layer-mid {
-      transform: translateZ(16px);
-      transform-style: preserve-3d;
-    }
-
-    .tactile-layer-high {
-      transform: translateZ(28px);
-    }
-
-    .specular-sheen {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      pointer-events: none;
-      background: radial-gradient(circle at 50% 50%, var(--glare-color), transparent 62%);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      z-index: 15;
-    }
-
-    /* 3D Flip Card for Profile / Quick Notes */
-    .flip-stage {
-      perspective: 1100px;
-    }
-    .flip-body {
-      position: relative;
-      width: 100%;
-      transition: transform 0.68s cubic-bezier(0.32, 1.4, 0.6, 1);
-      transform-style: preserve-3d;
-    }
-    .flip-body.flipped {
-      transform: rotateY(180deg);
-    }
-    .flip-side {
-      backface-visibility: hidden;
-      -webkit-backface-visibility: hidden;
-    }
-    .flip-side-back {
-      position: absolute;
-      inset: 0;
-      transform: rotateY(180deg);
-    }
-
-    /* OnePlus Nord CE 5 (19.9:9) Bezel Frame Preview */
-    .nord-bezel-frame {
-      max-width: 412px;
-      min-height: 890px;
-      margin: 16px auto 28px auto;
-      border-radius: 44px;
-      border: 7px solid var(--bezel-border);
-      box-shadow: 0 30px 80px -18px rgba(0, 0, 0, 0.28), 0 0 0 1px var(--border-strong);
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* Pill / Chip Styling */
-    .chip-btn {
-      background: var(--bg-pill);
-      color: var(--text-secondary);
-      border: 1px solid transparent;
-      transition: all 0.18s ease;
-    }
-    .chip-btn:hover {
-      color: var(--text-primary);
-      border-color: var(--border-strong);
-    }
-    .chip-btn.active {
-      background: var(--text-primary);
-      color: var(--bg-surface-solid);
-      font-weight: 600;
-    }
-
-    /* Subtle Dot Matrix Background Pattern (Nothing OS / Engineering aesthetic) */
-    .dot-grid-bg {
-      background-image: radial-gradient(var(--border-strong) 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-strong);
-      border-radius: 999px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f6f8fd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1424" media="(prefers-color-scheme: dark)">
+<title>Utkarsh’s Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8fd;--dot:rgba(17,26,51,.17);--card:#fff;--ink:#111a33;--mute:#5b6580;--line:rgba(17,26,51,.12);--acc:#2d4bff;--pop:#ff6a2b;--chip:#e2e7f3;--sh:0 1px 2px rgba(17,26,51,.06),0 10px 24px -12px rgba(17,26,51,.25);
+--serif:'Instrument Serif',Georgia,serif;--sans:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+color-scheme:light dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--dot:rgba(255,255,255,.08);--card:#18203a;--ink:#eef1ff;--mute:#9aa5c8;--line:rgba(255,255,255,.12);--acc:#8097ff;--pop:#ff8a4d;--chip:#222c4d;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 24px -12px rgba(0,0,0,.6)}}
+:root[data-theme="dark"]{--bg:#0e1424;--dot:rgba(255,255,255,.08);--card:#18203a;--ink:#eef1ff;--mute:#9aa5c8;--line:rgba(255,255,255,.12);--acc:#8097ff;--pop:#ff8a4d;--chip:#222c4d;--sh:0 1px 2px rgba(0,0,0,.3),0 10px 24px -12px rgba(0,0,0,.6);color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+*,*::before,*::after{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--sans);min-height:100svh;overflow-x:hidden;transition:background-color .4s,color .4s}
+.wrap{max-width:520px;margin:0 auto;padding:18px 18px 60px;position:relative;z-index:1}
+button,input{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:8px}
+.top{display:flex;align-items:center;justify-content:space-between}
+.me{display:flex;align-items:center;gap:10px;font-weight:700}
+.av{width:38px;height:38px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font:italic 19px var(--serif)}
+.mode{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:14px;box-shadow:var(--sh);transition:transform .2s}
+.mode:active{transform:scale(.93)}
+.clock{margin:34px 0 8px}
+.time{font:400 clamp(84px,27vw,120px)/.85 var(--serif);letter-spacing:-.03em;display:flex;align-items:flex-start}
+.time small{font:500 16px var(--sans);margin:10px 0 0 8px;color:var(--pop);letter-spacing:0}
+.time .c{animation:blink 1s steps(2,jump-none) infinite;margin:0 .02em}
+@keyframes blink{50%{opacity:.25}}
+.greet{font:italic 30px/1.1 var(--serif);margin-top:14px}
+.date{color:var(--mute);margin-top:2px}
+form{margin:26px 0 12px;display:flex;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px 6px 6px 18px;box-shadow:var(--sh);transition:box-shadow .3s,border-color .3s}
+form:focus-within{border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 18%,transparent)}
+input{flex:1;min-width:0;border:0;background:none;outline:0;font-size:17px}
+input::placeholder{color:var(--mute)}
+.go{border:0;border-radius:16px;background:var(--acc);color:#fff;padding:0 20px;font-weight:700;transition:transform .15s}
+.go:active{transform:scale(.92)}
+.eng{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:4px 18px 10px}
+.eng::-webkit-scrollbar{display:none}
+.eng button{flex:none;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:7px 14px;font-size:14px;display:flex;align-items:center;gap:7px;transition:.25s}
+.eng i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.eng button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+h2{font:400 34px/1 var(--serif);margin:46px 0 14px;display:flex;justify-content:space-between;align-items:baseline}
+h2 em{font:500 13px var(--sans);color:var(--mute);font-style:normal}
+.tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--chip);padding:4px;border-radius:14px;position:relative}
+.tabs button{flex:1;border:0;background:none;padding:8px 0;border-radius:10px;font-size:14px;color:var(--mute);transition:.25s}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);font-weight:700;box-shadow:var(--sh)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px 8px}
+.t{display:flex;flex-direction:column;align-items:center;gap:7px;text-decoration:none;font-size:12.5px;text-align:center;animation:pop .45s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i)*35ms)}
+@keyframes pop{from{opacity:0;transform:scale(.6) translateY(14px)}}
+.t b{width:62px;height:62px;border-radius:21px;display:grid;place-items:center;color:#fff;font:italic 26px var(--serif);background:linear-gradient(150deg,var(--c),color-mix(in srgb,var(--c) 70%,#000));box-shadow:0 10px 18px -8px var(--c),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .2s}
+.t:active b{transform:scale(.86) rotate(-4deg)}
+.t.add b{background:none;border:2px dashed var(--line);color:var(--mute);box-shadow:none;font:300 30px var(--sans)}
+.addf{display:none;gap:8px;margin-top:18px;flex-wrap:wrap}
+.addf.on{display:flex}
+.addf input{flex:1 1 40%;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:15px}
+.addf button{flex:1 1 100%;padding:10px;border:0;border-radius:12px;background:var(--ink);color:var(--bg);font-weight:700}
+.clr{border:0;background:none;color:var(--mute);font-size:13px;text-decoration:underline;margin-top:10px}
+.stage{perspective:1000px;margin:6px 0 4px}
+.id{position:relative;aspect-ratio:1.586;transform-style:preserve-3d;transition:transform .12s linear;cursor:pointer;touch-action:pan-y}
+.face{position:absolute;inset:0;border-radius:26px;padding:22px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 30px 50px -22px rgba(20,30,90,.6)}
+.front{background:linear-gradient(135deg,#1a2fd6,#3b1fa0 70%,#6a1b9a);color:#fff}
+.front::after{content:"";position:absolute;inset:0;background:conic-gradient(from var(--ang,0deg) at var(--gx,50%) var(--gy,50%),transparent,rgba(127,216,255,.35),rgba(255,158,199,.35),rgba(255,235,150,.3),transparent 70%);mix-blend-mode:screen;pointer-events:none}
+.front::before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-70px;top:-80px;border:1px solid rgba(255,255,255,.25);box-shadow:0 0 0 24px rgba(255,255,255,.05),0 0 0 52px rgba(255,255,255,.04)}
+.front small{font-size:12px;opacity:.8}
+.front h3{font:400 38px/1 var(--serif);margin:4px 0}
+.front p{font-size:14px;opacity:.9}
+.row{display:flex;justify-content:space-between;align-items:flex-end}
+.row b{font:400 34px/1 var(--serif)}
+.back{transform:rotateY(180deg);background:var(--card);border:1px solid var(--line);justify-content:flex-start;gap:9px;font-size:13px}
+.back h4{font:italic 22px var(--serif)}
+.back dl{display:grid;grid-template-columns:78px 1fr;gap:6px 8px;color:var(--mute)}
+.back dt{color:var(--pop);font-weight:700}
+.tip{text-align:center;color:var(--mute);font-size:13px;margin-top:14px}
+.bio{margin-top:26px;font-size:17px;line-height:1.55}
+.bio mark{background:linear-gradient(transparent 60%,color-mix(in srgb,var(--pop) 35%,transparent) 0);color:inherit}
+.proj{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--sh);margin-bottom:14px;overflow:hidden}
+.proj summary{list-style:none;padding:20px;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+.proj summary::-webkit-details-marker{display:none}
+.proj h3{font:400 28px/1.05 var(--serif)}
+.proj .pl{width:34px;height:34px;flex:none;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:transform .35s,background .3s}
+.proj[open] .pl{transform:rotate(45deg);background:var(--pop);color:#fff;border-color:var(--pop)}
+.proj .in{padding:0 20px 20px;animation:drop .4s ease}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}}
+.proj p{color:var(--mute);margin-bottom:12px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tags span{background:var(--chip);border-radius:8px;padding:3px 9px;font-size:12.5px}
+.open{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;font-weight:700;border-radius:12px;padding:10px 16px;transition:transform .15s}
+.open:active{transform:scale(.94)}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.nums div{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 12px;box-shadow:var(--sh)}
+.nums strong{display:block;font:400 38px/1 var(--serif)}
+.nums span{font-size:12.5px;color:var(--mute);line-height:1.25;display:block;margin-top:4px}
+.find{display:grid;gap:8px}
+.find a{display:flex;justify-content:space-between;align-items:center;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 18px;transition:transform .2s,border-color .2s}
+.find a:active{transform:scale(.97);border-color:var(--acc)}
+.find span{color:var(--mute);font-size:14px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,120px);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:14px;font-size:14px;transition:transform .4s cubic-bezier(.3,1.4,.5,1);z-index:9}
+.toast.on{transform:translate(-50%,0)}
+footer{margin-top:44px;text-align:center;color:var(--mute);font-size:13px}
+#dots,#fish{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#dots{z-index:0}#fish{z-index:6}
+.proj,.nums div,.find a,#sf{position:relative;border:0;background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card) 90%,var(--acc)));box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 1px 2px rgba(45,75,255,.05),0 22px 40px -22px color-mix(in srgb,var(--acc) 55%,transparent)}
+.proj::after,.nums div::after,.find a::after,#sf::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.2px;background:linear-gradient(145deg,color-mix(in srgb,var(--acc) 60%,transparent),transparent 34%,transparent 64%,color-mix(in srgb,var(--pop) 55%,transparent));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.proj{border-radius:30px}.nums div{border-radius:26px}.find a{border-radius:24px}#sf{border-radius:28px}
+#sf:focus-within{box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 16%,transparent)}
+.tabs{border-radius:20px}.tabs button{border-radius:16px}
+.t b{position:relative;overflow:hidden;border-radius:23px}
+.t b::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.42),transparent 48%)}
+.t svg{width:30px;height:30px;position:relative;z-index:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.front{box-shadow:inset 0 0 0 1px rgba(255,255,255,.3),inset 0 1px 0 rgba(255,255,255,.55),0 30px 50px -22px rgba(20,30,90,.6)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
 </head>
-<body class="dot-grid-bg">
-
-  <!-- Top Control Strip: Theme Sync (Auto / Light / Dark), Nord CE 5 Frame Toggle & Save HTML -->
-  <div class="sticky top-0 z-50 w-full backdrop-blur-md bg-[var(--bg-surface)] border-b border-[var(--border-hairline)] px-3 py-2">
-    <div class="max-w-md mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
-      <!-- Device Status Pill -->
-      <div class="flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-[#d94e34]"></span>
-        <span class="font-mono-code font-medium text-[11px] tracking-tight">NORD CE 5</span>
-        <span id="theme-status-badge" class="px-1.5 py-0.5 rounded text-[10px] font-mono-code bg-[var(--bg-pill)] text-[var(--text-secondary)]">
-          LIGHT • SYNC
-        </span>
-      </div>
-
-      <!-- Theme Switcher (Light / Auto OS / Dark) + Actions -->
-      <div class="flex items-center gap-1">
-        <div class="inline-flex p-0.5 rounded-xl bg-[var(--bg-pill)] border border-[var(--border-hairline)]" role="group">
-          <button id="btn-theme-light" type="button" class="px-2 py-1 rounded-lg text-[11px] font-medium transition" title="Light Mode (Your current phone theme)">
-            ☀️ Light
-          </button>
-          <button id="btn-theme-auto" type="button" class="px-2 py-1 rounded-lg text-[11px] font-medium transition" title="Sync automatically with Android OS theme">
-            🔄 Auto
-          </button>
-          <button id="btn-theme-dark" type="button" class="px-2 py-1 rounded-lg text-[11px] font-medium transition" title="Dark Mode">
-            🌙 Dark
-          </button>
-        </div>
-
-        <button id="btn-toggle-bezel" type="button" class="px-2 py-1 rounded-xl bg-[var(--bg-pill)] hover:border-[var(--border-strong)] border border-transparent text-[11px] font-medium" title="Toggle OnePlus Nord CE 5 Phone Frame">
-          📱
-        </button>
-
-        <button id="btn-save-page" type="button" class="px-2.5 py-1 rounded-xl bg-[#d94e34] text-white font-semibold text-[11px] shadow-sm hover:opacity-95 transition">
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Viewport Wrapper -->
-  <div id="viewport-shell" class="relative w-full min-h-[calc(100vh-45px)] transition-all duration-300">
-
-    <!-- Optional Nord CE 5 Camera Punch-Hole when Bezel Preview is toggled ON -->
-    <div id="camera-cutout" class="hidden absolute top-2.5 left-1/2 -translate-x-1/2 z-50 w-3.5 h-3.5 rounded-full bg-zinc-900 border border-white/20"></div>
-
-    <!-- Interactive 3D Kinetic Architectural Sculpture Canvas (Three.js) -->
-    <canvas id="kinetic-3d-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-85"></canvas>
-
-    <!-- Main Mobile Startpage Column (Calibrated for 6.77" 19.9:9 OnePlus Nord CE 5) -->
-    <main class="relative z-10 max-w-md mx-auto px-4 pt-4 pb-28 flex flex-col gap-4 perspective-stage">
-
-      <!-- 1. PERSONAL HEADER & EDITORIAL CLOCK CARD -->
-      <section class="tactile-card rounded-3xl p-5" data-tilt="10">
-        <div class="specular-sheen"></div>
-        <div class="tactile-layer-mid">
-          <!-- Top Meta Row: Date, Location & Live Battery -->
-          <div class="flex items-center justify-between text-[11px] font-mono-code text-[var(--text-secondary)] mb-2">
-            <div class="flex items-center gap-1.5">
-              <span id="live-date-label">TUE, 27 OCT</span>
-              <span>•</span>
-              <span id="weather-pill" class="cursor-pointer hover:underline" title="Tap to switch city">28°C Manipur / UP</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button id="btn-3d-sculpture" type="button" class="px-2 py-0.5 rounded-md bg-[var(--bg-pill)] hover:border-[var(--border-strong)] border border-transparent text-[10px] font-mono-code transition" title="Change 3D Kinetic Geometry">
-                3D: <span id="sculpture-name">Kinetic Torus</span>
-              </button>
-              <span id="battery-pill" class="font-semibold text-[var(--text-primary)]">⚡ 96%</span>
-            </div>
-          </div>
-
-          <!-- Editorial Time + Personal Greeting -->
-          <div class="flex items-end justify-between gap-2 my-1 tactile-layer-high">
-            <div>
-              <p id="personal-greeting" class="text-xs font-medium text-[var(--text-secondary)]">Good evening, Utkarsh</p>
-              <div class="flex items-baseline gap-1.5">
-                <h1 id="live-clock-hm" class="font-heading text-5xl font-extrabold tracking-tight text-[var(--text-primary)]">
-                  20:49
-                </h1>
-                <span id="live-clock-sec" class="font-mono-code text-xs font-semibold text-[#d94e34]">10s</span>
-              </div>
-            </div>
-
-            <!-- Interactive 3D Tactile Compass / Gyro Trigger -->
-            <button id="btn-pulse-3d" type="button" class="group relative w-14 h-14 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] flex flex-col items-center justify-center shadow-inner active:scale-95 transition" title="Tap to spin 3D sculpture">
-              <span class="w-2 h-2 rounded-full bg-[#d94e34] group-hover:scale-125 transition-transform"></span>
-              <span class="font-mono-code text-[9px] text-[var(--text-secondary)] mt-1">SPIN 3D</span>
-            </button>
-          </div>
-
-          <!-- Utkarsh Singh Identity Strip (From Resume) -->
-          <div class="mt-3.5 pt-3 border-t border-[var(--border-hairline)] flex flex-wrap items-center justify-between gap-2 text-xs">
-            <div class="flex items-center gap-2">
-              <div class="w-7 h-7 rounded-full bg-[#d94e34] text-white font-heading font-bold text-xs flex items-center justify-center shadow-sm">
-                US
-              </div>
-              <div>
-                <div class="font-heading font-bold text-xs text-[var(--text-primary)] flex items-center gap-1.5">
-                  <span>Utkarsh Singh</span>
-                  <span class="font-mono-code text-[10px] px-1.5 py-0.2 rounded bg-[var(--accent-soft)] text-[#d94e34] font-semibold">NIT Manipur '27</span>
-                </div>
-                <p class="text-[11px] text-[var(--text-secondary)]">B.Tech CSE (8.69 CGPA) • ML &amp; Full-Stack MERN</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. SMART SEARCH & DIRECT AI PROMPT BAR -->
-      <section class="tactile-card rounded-3xl p-3.5 z-20" data-tilt="7">
-        <div class="specular-sheen"></div>
-        <div class="tactile-layer-mid">
-          <form id="universal-search-form" class="flex items-center gap-2">
-            <!-- Engine Cycle Pill -->
-            <button id="btn-cycle-engine" type="button" class="shrink-0 h-11 px-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)] hover:border-[var(--border-strong)] transition active:scale-95" title="Tap to switch search or AI engine">
-              <span id="active-engine-badge" class="w-2 h-2 rounded-full bg-[#d94e34]"></span>
-              <span id="active-engine-label">Google</span>
-            </button>
-
-            <!-- Input Field -->
-            <div class="relative flex-1">
-              <input
-                id="universal-search-input"
-                type="text"
-                autocomplete="off"
-                placeholder="Search Google, ask AI, or paste URL..."
-                class="w-full h-11 bg-[var(--bg-subtle)] text-[var(--text-primary)] placeholder-[var(--text-muted)] text-sm rounded-2xl pl-3.5 pr-8 border border-[var(--border-hairline)] focus:outline-none focus:border-[#d94e34] transition"
-              />
-              <button id="btn-clear-input" type="button" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] text-xs">
-                ✕
-              </button>
-            </div>
-
-            <!-- Go Button -->
-            <button type="submit" class="shrink-0 h-11 px-4 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-surface-solid)] font-heading font-bold text-xs tracking-wide hover:opacity-90 transition active:scale-95">
-              Go ↗
-            </button>
-          </form>
-
-          <!-- Instant Engine Switcher Row (Search + Direct AI Query) -->
-          <div class="flex items-center gap-1.5 mt-2.5 overflow-x-auto pb-0.5 text-[11px]">
-            <button type="button" data-eng="google" class="eng-pill chip-btn active px-2.5 py-1 rounded-xl shrink-0">Google</button>
-            <button type="button" data-eng="chatgpt" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">ChatGPT</button>
-            <button type="button" data-eng="claude" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">Claude</button>
-            <button type="button" data-eng="gemini" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">Gemini</button>
-            <button type="button" data-eng="deepseek" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">DeepSeek</button>
-            <button type="button" data-eng="youtube" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">YouTube</button>
-            <button type="button" data-eng="perplexity" class="eng-pill chip-btn px-2.5 py-1 rounded-xl shrink-0">Perplexity</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. AI WORKBENCH, YOUTUBE & CODING LAUNCHPAD (Interactive Filterable 3D Grid) -->
-      <section class="tactile-card rounded-3xl p-4" data-tilt="8">
-        <div class="specular-sheen"></div>
-        <div class="tactile-layer-mid">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-1.5 overflow-x-auto">
-              <button type="button" data-cat="all" class="cat-tab chip-btn active px-2.5 py-1 rounded-xl text-[11px]">All</button>
-              <button type="button" data-cat="ai" class="cat-tab chip-btn px-2.5 py-1 rounded-xl text-[11px]">AI Models</button>
-              <button type="button" data-cat="code" class="cat-tab chip-btn px-2.5 py-1 rounded-xl text-[11px]">Utkarsh's Coding</button>
-              <button type="button" data-cat="daily" class="cat-tab chip-btn px-2.5 py-1 rounded-xl text-[11px]">Media &amp; Daily</button>
-            </div>
-            <button id="btn-open-custom-link" type="button" class="shrink-0 ml-1 px-2 py-1 rounded-xl bg-[var(--accent-soft)] text-[#d94e34] font-semibold text-[11px] hover:opacity-90 transition">
-              + Add
-            </button>
-          </div>
-
-          <!-- 4-Column Tactile Launcher Grid -->
-          <div id="launchpad-grid" class="grid grid-cols-4 gap-2.5"></div>
-        </div>
-      </section>
-
-      <!-- 4. UTKARSH'S PORTFOLIO, LIVE PROJECTS & 1-TAP APPLICATION CLIPBOARD -->
-      <section class="tactile-card rounded-3xl p-4" data-tilt="9">
-        <div class="specular-sheen"></div>
-        <div class="tactile-layer-mid">
-          <div class="flex items-center justify-between mb-2.5">
-            <div>
-              <span class="font-mono-code text-[10px] uppercase tracking-wider text-[#d94e34] font-semibold">RESUME &amp; SHIPPED WORK</span>
-              <h2 class="font-heading font-bold text-sm text-[var(--text-primary)]">Projects &amp; Quick-Copy Links</h2>
-            </div>
-            <span class="font-mono-code text-[10px] px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] text-[var(--text-secondary)]">
-              1,100+ DSA Solved
-            </span>
-          </div>
-
-          <!-- Shipped Projects (Direct Links from Utkarsh's Resume PDF) -->
-          <div class="grid grid-cols-1 gap-2 mb-3">
-            <!-- Project 1: Veritas -->
-            <a href="https://vertiasapi.vercel.app/" target="_blank" rel="noopener noreferrer" class="group p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] hover:border-[#d94e34] transition flex items-center justify-between">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-heading font-bold text-xs text-[var(--text-primary)] group-hover:text-[#d94e34] transition">Veritas — AI Deepfake Detection</span>
-                  <span class="font-mono-code text-[9px] px-1.5 py-0.2 rounded bg-[var(--bg-surface-solid)] text-[var(--text-secondary)] border border-[var(--border-hairline)]">Swin Transformer • FastAPI</span>
-                </div>
-                <p class="text-[11px] text-[var(--text-secondary)] mt-0.5">Real-vs-AI image authenticity pipeline &amp; Chrome extension</p>
-              </div>
-              <span class="text-xs font-mono-code text-[var(--text-muted)] group-hover:text-[#d94e34] group-hover:translate-x-0.5 transition">Live ↗</span>
-            </a>
-
-            <!-- Project 2: FoodSync -->
-            <a href="https://food-sync-sigma.vercel.app/" target="_blank" rel="noopener noreferrer" class="group p-3 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] hover:border-[#d94e34] transition flex items-center justify-between">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="font-heading font-bold text-xs text-[var(--text-primary)] group-hover:text-[#d94e34] transition">FoodSync — Waste Management</span>
-                  <span class="font-mono-code text-[9px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 font-medium">🏆 2nd Runner-Up REGEN '25</span>
-                </div>
-                <p class="text-[11px] text-[var(--text-secondary)] mt-0.5">Full-stack MERN platform connecting NGOs &amp; surplus providers</p>
-              </div>
-              <span class="text-xs font-mono-code text-[var(--text-muted)] group-hover:text-[#d94e34] group-hover:translate-x-0.5 transition">Live ↗</span>
-            </a>
-          </div>
-
-          <!-- 1-Tap Copy Bar for Job/Internship Forms on Mobile -->
-          <div class="pt-2.5 border-t border-[var(--border-hairline)]">
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="text-[10px] font-mono-code text-[var(--text-muted)] uppercase">1-Tap Copy for Forms &amp; Applications</span>
-              <a href="https://drive.google.com/file/d/1VJdcJVR89HIQ20ofgyPtImDvR7dBA2s5/view" target="_blank" rel="noopener noreferrer" class="text-[10px] font-mono-code text-[#d94e34] hover:underline">
-                TATA GenAI Cert ↗
-              </a>
-            </div>
-            <div class="flex flex-wrap gap-1.5 text-[11px]">
-              <button type="button" data-copy="https://github.com/Utkarsh-Singh-u" data-label="GitHub URL" class="copy-chip chip-btn px-2.5 py-1 rounded-xl font-mono-code flex items-center gap-1">
-                <span>📋 GitHub</span>
-              </button>
-              <button type="button" data-copy="https://www.linkedin.com/in/utkarsh-singh-275866288/" data-label="LinkedIn URL" class="copy-chip chip-btn px-2.5 py-1 rounded-xl font-mono-code flex items-center gap-1">
-                <span>📋 LinkedIn</span>
-              </button>
-              <button type="button" data-copy="https://leetcode.com/u/UTKARSH_710/" data-label="LeetCode URL" class="copy-chip chip-btn px-2.5 py-1 rounded-xl font-mono-code flex items-center gap-1">
-                <span>📋 LeetCode</span>
-              </button>
-              <button type="button" data-copy="utkarshsingh7104@gmail.com" data-label="Email Address" class="copy-chip chip-btn px-2.5 py-1 rounded-xl font-mono-code flex items-center gap-1">
-                <span>📋 Email</span>
-              </button>
-              <button type="button" data-copy="+91 9889775335" data-label="Phone Number" class="copy-chip chip-btn px-2.5 py-1 rounded-xl font-mono-code flex items-center gap-1">
-                <span>📋 Phone</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. DUAL INTERACTIVE ROW: DAILY DSA / CODING TRACKER + 180° 3D FLIP SCRATCHPAD -->
-      <section class="grid grid-cols-2 gap-3.5">
-
-        <!-- Left Card: Interactive Daily DSA Streak & Problem Counter -->
-        <div class="tactile-card rounded-3xl p-4 flex flex-col justify-between h-[184px]" data-tilt="12">
-          <div class="specular-sheen"></div>
-          <div class="tactile-layer-mid flex items-start justify-between">
-            <div>
-              <span class="font-mono-code text-[10px] uppercase tracking-wider text-[var(--text-muted)] block">DSA PRACTICE</span>
-              <h3 class="font-heading font-bold text-xs text-[var(--text-primary)] mt-0.5">LeetCode &amp; GFG</h3>
-            </div>
-            <a href="https://leetcode.com/u/UTKARSH_710/" target="_blank" rel="noopener noreferrer" class="text-[10px] font-mono-code text-[#d94e34] hover:underline">
-              Profile ↗
-            </a>
-          </div>
-
-          <div class="tactile-layer-high my-1">
-            <div class="flex items-baseline gap-1.5">
-              <span id="dsa-total-count" class="font-heading text-3xl font-extrabold text-[var(--text-primary)]">1,100</span>
-              <span class="font-mono-code text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">+<span id="dsa-today-count">0</span> today</span>
-            </div>
-            <p class="text-[10px] text-[var(--text-secondary)] mt-0.5">Log today's solved problems</p>
-          </div>
-
-          <div class="tactile-layer-mid flex items-center gap-1.5 pt-2 border-t border-[var(--border-hairline)]">
-            <button id="btn-dsa-minus" type="button" class="w-8 h-8 rounded-xl bg-[var(--bg-subtle)] text-[var(--text-primary)] font-mono-code font-bold text-xs hover:border-[var(--border-strong)] border border-transparent transition">
-              -
-            </button>
-            <button id="btn-dsa-plus" type="button" class="flex-1 h-8 rounded-xl bg-[var(--text-primary)] text-[var(--bg-surface-solid)] font-heading font-semibold text-xs hover:opacity-90 transition active:scale-95">
-              +1 Solved
-            </button>
-          </div>
-        </div>
-
-        <!-- Right Card: 180° 3D Flip Quick Scratchpad -->
-        <div class="flip-stage h-[184px]">
-          <div id="scratchpad-flip-body" class="flip-body h-full">
-
-            <!-- Front Side -->
-            <div class="flip-side tactile-card rounded-3xl p-4 h-full flex flex-col justify-between">
-              <div class="flex items-start justify-between">
-                <div>
-                  <span class="font-mono-code text-[10px] uppercase tracking-wider text-[var(--text-muted)] block">3D SCRATCHPAD</span>
-                  <h3 class="font-heading font-bold text-xs text-[var(--text-primary)] mt-0.5">Quick Pin</h3>
-                </div>
-                <button id="btn-flip-note-open" type="button" class="px-2 py-0.5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-hairline)] text-[10px] font-mono-code font-medium text-[var(--text-primary)] hover:border-[#d94e34] transition">
-                  Edit ↻
-                </button>
-              </div>
-
-              <p id="scratchpad-preview" class="text-xs text-[var(--text-secondary)] line-clamp-3 leading-relaxed bg-[var(--bg-subtle)] p-2.5 rounded-2xl border border-[var(--border-hairline)]">
-                Revise Swin Transformer architecture &amp; solve 3 DP problems on LeetCode today.
-              </p>
-
-              <div class="flex items-center justify-between text-[10px] font-mono-code text-[var(--text-muted)]">
-                <span>Saved on phone</span>
-                <span>180° 3D</span>
-              </div>
-            </div>
-
-            <!-- Back Side (Editor) -->
-            <div class="flip-side flip-side-back tactile-card rounded-3xl p-3.5 h-full flex flex-col justify-between">
-              <div class="flex items-center justify-between mb-1">
-                <span class="font-mono-code text-[10px] font-semibold uppercase text-[#d94e34]">Editing Note</span>
-                <button id="btn-flip-note-save" type="button" class="px-2.5 py-0.5 rounded-lg bg-[#d94e34] text-white text-[10px] font-semibold">
-                  Save ✓
-                </button>
-              </div>
-              <textarea
-                id="scratchpad-input"
-                rows="4"
-                placeholder="Write a quick reminder or link..."
-                class="w-full flex-1 bg-[var(--bg-subtle)] text-[var(--text-primary)] text-xs rounded-xl p-2 border border-[var(--border-hairline)] focus:outline-none focus:border-[#d94e34] resize-none"
-              >Revise Swin Transformer architecture &amp; solve 3 DP problems on LeetCode today.</textarea>
-            </div>
-
-          </div>
-        </div>
-
-      </section>
-
-      <!-- 6. FOCUS POMODORO BAR -->
-      <section class="tactile-card rounded-3xl p-3.5 flex items-center justify-between" data-tilt="6">
-        <div class="specular-sheen"></div>
-        <div class="tactile-layer-mid flex items-center gap-3">
-          <div class="w-9 h-9 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] flex items-center justify-center font-mono-code text-xs font-bold text-[#d94e34]">
-            25m
-          </div>
-          <div>
-            <h3 class="font-heading font-bold text-xs text-[var(--text-primary)]">Deep Work Timer</h3>
-            <p id="pomo-status" class="text-[11px] text-[var(--text-secondary)]">Ready for coding / ML session</p>
-          </div>
-        </div>
-        <div class="tactile-layer-mid flex items-center gap-1.5">
-          <span id="pomo-clock" class="font-mono-code font-semibold text-xs px-2.5 py-1.5 rounded-xl bg-[var(--bg-subtle)] text-[var(--text-primary)]">25:00</span>
-          <button id="btn-pomo-start" type="button" class="px-3 py-1.5 rounded-xl bg-[var(--text-primary)] text-[var(--bg-surface-solid)] font-heading font-semibold text-xs hover:opacity-90 transition">
-            Start
-          </button>
-          <button id="btn-pomo-reset" type="button" class="px-2 py-1.5 rounded-xl bg-[var(--bg-subtle)] text-[var(--text-secondary)] text-xs" title="Reset">
-            ↺
-          </button>
-        </div>
-      </section>
-
-    </main>
-
-    <!-- Bottom Thumb-Friendly Floating Navigation Dock -->
-    <nav class="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[392px]">
-      <div class="tactile-card rounded-3xl px-3 py-2 flex items-center justify-around border border-[var(--border-strong)] shadow-xl">
-        <button type="button" data-nav="search" class="nav-dock-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-2xl text-[var(--text-primary)] hover:bg-[var(--bg-pill)] transition">
-          <span class="text-sm font-mono-code font-bold">⌕</span>
-          <span class="text-[10px] font-medium">Search</span>
-        </button>
-
-        <button type="button" data-nav="ai" class="nav-dock-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-pill)] transition">
-          <span class="text-sm font-mono-code font-bold">✦</span>
-          <span class="text-[10px] font-medium">AI Hub</span>
-        </button>
-
-        <!-- Center Theme / 3D Kinetic Trigger -->
-        <button id="btn-dock-kinetic" type="button" class="px-3.5 py-2 rounded-2xl bg-[#d94e34] text-white font-heading font-bold text-xs shadow-md active:scale-95 transition flex items-center gap-1.5">
-          <span>◈</span>
-          <span>3D Shift</span>
-        </button>
-
-        <button type="button" data-nav="code" class="nav-dock-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-pill)] transition">
-          <span class="text-sm font-mono-code font-bold">{ }</span>
-          <span class="text-[10px] font-medium">Coding</span>
-        </button>
-
-        <button type="button" data-nav="theme" class="nav-dock-btn flex flex-col items-center gap-0.5 px-2 py-1 rounded-2xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-pill)] transition">
-          <span id="dock-theme-icon" class="text-sm">☀️</span>
-          <span class="text-[10px] font-medium">Theme</span>
-        </button>
-      </div>
-    </nav>
-
-  </div>
-
-  <!-- MODAL: Add Custom Shortcut -->
-  <div id="modal-custom-shortcut" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="tactile-card w-full max-w-sm rounded-3xl p-5 bg-[var(--bg-surface-solid)]">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="font-heading font-bold text-base text-[var(--text-primary)]">Add Shortcut to Launchpad</h3>
-        <button id="btn-close-custom-modal" type="button" class="w-7 h-7 rounded-full bg-[var(--bg-subtle)] text-[var(--text-secondary)] flex items-center justify-center text-xs">✕</button>
-      </div>
-      <form id="form-custom-shortcut" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-[var(--text-secondary)] mb-1 font-medium">Title</label>
-          <input id="custom-title" type="text" required placeholder="e.g. Hugging Face, Kaggle, NIT Portal" class="w-full bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 border border-[var(--border-hairline)] focus:outline-none focus:border-[#d94e34]" />
-        </div>
-        <div>
-          <label class="block text-[var(--text-secondary)] mb-1 font-medium">URL</label>
-          <input id="custom-url" type="text" required placeholder="https://huggingface.co" class="w-full bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 border border-[var(--border-hairline)] focus:outline-none focus:border-[#d94e34]" />
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[var(--text-secondary)] mb-1 font-medium">2-Letter Monogram / Icon</label>
-            <input id="custom-badge" type="text" maxlength="3" value="HF" class="w-full bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 border border-[var(--border-hairline)] text-center font-mono-code font-bold" />
-          </div>
-          <div>
-            <label class="block text-[var(--text-secondary)] mb-1 font-medium">Category</label>
-            <select id="custom-cat" class="w-full bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded-xl px-3 py-2.5 border border-[var(--border-hairline)]">
-              <option value="ai">AI Models</option>
-              <option value="code">Utkarsh's Coding</option>
-              <option value="daily">Media &amp; Daily</option>
-            </select>
-          </div>
-        </div>
-        <div class="flex justify-between items-center pt-2">
-          <button id="btn-restore-defaults" type="button" class="text-[11px] text-[var(--text-muted)] hover:text-[var(--text-primary)] underline">
-            Reset Defaults
-          </button>
-          <button type="submit" class="px-4 py-2 rounded-xl bg-[#d94e34] text-white font-heading font-semibold">
-            Save Shortcut
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Minimal Toast Notification -->
-  <div id="toast-pill" class="fixed top-14 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 -translate-y-2 transition-all duration-200 px-3.5 py-2 rounded-2xl bg-[var(--text-primary)] text-[var(--bg-surface-solid)] text-xs font-medium shadow-lg flex items-center gap-2">
-    <span id="toast-msg">Copied to clipboard</span>
-  </div>
-
-  <script>
-    (function () {
-      // =========================================================================
-      // 1. ADAPTIVE PHONE THEME ENGINE (Defaults to Light Mode + OS Media Listener)
-      // =========================================================================
-      // Default to 'light' because Utkarsh specified his current phone uses a light theme,
-      // while also listening to system `prefers-color-scheme` changes automatically!
-      let themePreference = 'light';
-      try {
-        const storedTheme = localStorage.getItem('utkarsh_nord_theme_pref');
-        if (storedTheme) themePreference = storedTheme;
-      } catch (e) {}
-
-      const systemDarkMatcher = window.matchMedia('(prefers-color-scheme: dark)');
-
-      function getEffectiveTheme() {
-        if (themePreference === 'auto') {
-          return systemDarkMatcher.matches ? 'dark' : 'light';
-        }
-        return themePreference;
-      }
-
-      function applyTheme() {
-        const effective = getEffectiveTheme();
-        document.documentElement.setAttribute('data-theme', effective);
-
-        const badge = document.getElementById('theme-status-badge');
-        if (badge) {
-          badge.textContent = themePreference === 'auto'
-            ? `AUTO (${effective.toUpperCase()})`
-            : `${effective.toUpperCase()} MODE`;
-        }
-
-        const dockIcon = document.getElementById('dock-theme-icon');
-        if (dockIcon) {
-          dockIcon.textContent = effective === 'light' ? '☀️' : '🌙';
-        }
-
-        // Highlight active theme button
-        const btnLight = document.getElementById('btn-theme-light');
-        const btnAuto = document.getElementById('btn-theme-auto');
-        const btnDark = document.getElementById('btn-theme-dark');
-        [
-          { el: btnLight, mode: 'light' },
-          { el: btnAuto, mode: 'auto' },
-          { el: btnDark, mode: 'dark' }
-        ].forEach(({ el, mode }) => {
-          if (!el) return;
-          if (themePreference === mode) {
-            el.className = 'px-2 py-1 rounded-lg text-[11px] font-semibold bg-[var(--text-primary)] text-[var(--bg-surface-solid)] transition';
-          } else {
-            el.className = 'px-2 py-1 rounded-lg text-[11px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition';
-          }
-        });
-
-        updateThreeJSThemeColors(effective);
-      }
-
-      function setThemePreference(mode) {
-        themePreference = mode;
-        try {
-          localStorage.setItem('utkarsh_nord_theme_pref', mode);
-        } catch (e) {}
-        applyTheme();
-        const label = mode === 'auto'
-          ? `Synced with Phone OS (${getEffectiveTheme()} theme)`
-          : `Switched to ${mode} theme`;
-        notify(label);
-      }
-
-      // Listen in real time if Android OS switches between Light & Dark mode
-      if (systemDarkMatcher.addEventListener) {
-        systemDarkMatcher.addEventListener('change', () => {
-          if (themePreference === 'auto') applyTheme();
-        });
-      }
-
-      document.getElementById('btn-theme-light').addEventListener('click', () => setThemePreference('light'));
-      document.getElementById('btn-theme-auto').addEventListener('click', () => setThemePreference('auto'));
-      document.getElementById('btn-theme-dark').addEventListener('click', () => setThemePreference('dark'));
-
-      // =========================================================================
-      // 2. TOAST NOTIFICATION HELPER
-      // =========================================================================
-      function notify(text) {
-        const pill = document.getElementById('toast-pill');
-        const msg = document.getElementById('toast-msg');
-        if (!pill || !msg) return;
-        msg.textContent = text;
-        pill.classList.remove('opacity-0', '-translate-y-2');
-        pill.classList.add('opacity-100', 'translate-y-0');
-        clearTimeout(pill._timer);
-        pill._timer = setTimeout(() => {
-          pill.classList.add('opacity-0', '-translate-y-2');
-          pill.classList.remove('opacity-100', 'translate-y-0');
-        }, 2200);
-      }
-
-      // =========================================================================
-      // 3. THREE.JS TACTILE ARCHITECTURAL 3D SCULPTURE (Light & Dark Adaptive)
-      // =========================================================================
-      const canvas = document.getElementById('kinetic-3d-canvas');
-      let renderer, scene, camera, mainSculpture, outerRings;
-      let sculptureMode = 0;
-      const sculptureNames = ['Kinetic Torus', 'Geodesic Sphere', 'Ribbon Helix'];
-      let spinImpulse = 0;
-      let pointerNormX = 0;
-      let pointerNormY = 0;
-
-      function initKinetic3D() {
-        if (!window.THREE || !canvas) return;
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0.2, 6.2);
-
-        renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-        const ambient = new THREE.AmbientLight(0xffffff, 0.9);
-        scene.add(ambient);
-
-        const dirLight1 = new THREE.DirectionalLight(0xd94e34, 1.4);
-        dirLight1.position.set(5, 6, 5);
-        scene.add(dirLight1);
-
-        const dirLight2 = new THREE.DirectionalLight(0x2563eb, 1.1);
-        dirLight2.position.set(-5, -4, 3);
-        scene.add(dirLight2);
-
-        buildSculpture();
-        window.addEventListener('resize', () => {
-          if (!renderer || !camera) return;
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        requestAnimationFrame(animateKinetic3D);
-      }
-
-      function buildSculpture() {
-        if (!scene) return;
-        if (mainSculpture) {
-          scene.remove(mainSculpture);
-          mainSculpture.geometry.dispose();
-        }
-        if (outerRings) {
-          scene.remove(outerRings);
-        }
-
-        const isDark = getEffectiveTheme() === 'dark';
-        const wireColor = isDark ? 0xf05a3e : 0xd94e34;
-        const secondaryColor = isDark ? 0x94a3b8 : 0x52514e;
-
-        let geom;
-        if (sculptureMode === 0) {
-          geom = new THREE.TorusKnotGeometry(1.55, 0.36, 120, 20, 2, 3);
-        } else if (sculptureMode === 1) {
-          geom = new THREE.IcosahedronGeometry(1.85, 2);
-        } else {
-          geom = new THREE.TorusGeometry(1.65, 0.45, 28, 90);
-        }
-
-        const mat = new THREE.MeshStandardMaterial({
-          color: wireColor,
-          wireframe: true,
-          roughness: 0.35,
-          metalness: 0.25,
-          transparent: true,
-          opacity: isDark ? 0.26 : 0.18
-        });
-
-        mainSculpture = new THREE.Mesh(geom, mat);
-        mainSculpture.position.set(0.6, 0.4, -0.5);
-        scene.add(mainSculpture);
-
-        outerRings = new THREE.Group();
-        for (let i = 0; i < 2; i++) {
-          const rGeom = new THREE.TorusGeometry(2.35 + i * 0.45, 0.012, 12, 120);
-          const rMat = new THREE.MeshBasicMaterial({
-            color: i === 0 ? wireColor : secondaryColor,
-            transparent: true,
-            opacity: isDark ? 0.3 : 0.22
-          });
-          const ring = new THREE.Mesh(rGeom, rMat);
-          ring.rotation.x = (i + 1) * 0.8;
-          ring.rotation.y = (i + 1) * 0.5;
-          outerRings.add(ring);
-        }
-        outerRings.position.copy(mainSculpture.position);
-        scene.add(outerRings);
-      }
-
-      function updateThreeJSThemeColors(effectiveTheme) {
-        if (!mainSculpture || !outerRings) return;
-        const isDark = effectiveTheme === 'dark';
-        mainSculpture.material.color.setHex(isDark ? 0xf05a3e : 0xd94e34);
-        mainSculpture.material.opacity = isDark ? 0.26 : 0.18;
-      }
-
-      function animateKinetic3D() {
-        requestAnimationFrame(animateKinetic3D);
-        const baseStep = 0.0035 + spinImpulse;
-        if (spinImpulse > 0) {
-          spinImpulse *= 0.93;
-          if (spinImpulse < 0.0002) spinImpulse = 0;
-        }
-
-        if (mainSculpture) {
-          mainSculpture.rotation.x += baseStep + (pointerNormY * 0.4 - mainSculpture.rotation.x) * 0.03;
-          mainSculpture.rotation.y += baseStep * 1.25 + (pointerNormX * 0.4 - mainSculpture.rotation.y) * 0.03;
-        }
-        if (outerRings) {
-          outerRings.rotation.z -= baseStep * 0.7;
-          outerRings.rotation.y += baseStep * 0.5;
-        }
-        if (renderer && scene && camera) {
-          renderer.render(scene, camera);
-        }
-      }
-
-      function cycleSculpture() {
-        sculptureMode = (sculptureMode + 1) % sculptureNames.length;
-        spinImpulse = 0.08;
-        buildSculpture();
-        const labelEl = document.getElementById('sculpture-name');
-        if (labelEl) labelEl.textContent = sculptureNames[sculptureMode];
-        notify(`3D Sculpture: ${sculptureNames[sculptureMode]}`);
-      }
-
-      document.getElementById('btn-3d-sculpture').addEventListener('click', cycleSculpture);
-      document.getElementById('btn-dock-kinetic').addEventListener('click', cycleSculpture);
-      document.getElementById('btn-pulse-3d').addEventListener('click', () => {
-        spinImpulse = 0.11;
-        notify('3D Kinetic Impulse');
-      });
-
-      // =========================================================================
-      // 4. TACTILE 3D CARD TILT & GYROSCOPE PARALLAX
-      // =========================================================================
-      const tiltCards = document.querySelectorAll('[data-tilt]');
-
-      function handleTiltInput(nx, ny) {
-        pointerNormX = nx;
-        pointerNormY = ny;
-        tiltCards.forEach((card) => {
-          const maxDeg = parseFloat(card.getAttribute('data-tilt') || 8);
-          const rx = (ny * maxDeg).toFixed(2);
-          const ry = (-nx * maxDeg).toFixed(2);
-          card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-          const sheen = card.querySelector('.specular-sheen');
-          if (sheen) {
-            const gx = ((nx + 1) / 2) * 100;
-            const gy = ((ny + 1) / 2) * 100;
-            sheen.style.opacity = '1';
-            sheen.style.background = `radial-gradient(circle at ${gx}% ${gy}%, var(--glare-color), transparent 62%)`;
-          }
-        });
-      }
-
-      window.addEventListener('pointermove', (e) => {
-        const nx = (e.clientX / window.innerWidth) * 2 - 1;
-        const ny = (e.clientY / window.innerHeight) * 2 - 1;
-        handleTiltInput(nx, ny);
-      });
-
-      window.addEventListener('deviceorientation', (e) => {
-        if (e.gamma === null || e.beta === null) return;
-        const nx = Math.max(-1, Math.min(1, e.gamma / 28));
-        const ny = Math.max(-1, Math.min(1, (e.beta - 42) / 28));
-        handleTiltInput(nx, ny);
-      });
-
-      // =========================================================================
-      // 5. LIVE CLOCK, PERSONALIZED GREETING & WEATHER
-      // =========================================================================
-      function updateClockAndGreeting() {
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
-        const ss = String(now.getSeconds()).padStart(2, '0');
-
-        document.getElementById('live-clock-hm').textContent = `${hh}:${mm}`;
-        document.getElementById('live-clock-sec').textContent = `${ss}s`;
-
-        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-        const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-        document.getElementById('live-date-label').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-
-        const hr = now.getHours();
-        let greet = 'Good evening, Utkarsh';
-        if (hr < 12) greet = 'Good morning, Utkarsh';
-        else if (hr < 17) greet = 'Good afternoon, Utkarsh';
-        document.getElementById('personal-greeting').textContent = greet;
-      }
-      setInterval(updateClockAndGreeting, 1000);
-      updateClockAndGreeting();
-
-      if ('getBattery' in navigator) {
-        navigator.getBattery().then((bat) => {
-          const refreshBat = () => {
-            document.getElementById('battery-pill').textContent = `⚡ ${Math.round(bat.level * 100)}%`;
-          };
-          refreshBat();
-          bat.addEventListener('levelchange', refreshBat);
-        }).catch(() => {});
-      }
-
-      const weatherLocations = [
-        '25°C Imphal, Manipur',
-        '29°C Lucknow, UP',
-        '27°C Guwahati, AS',
-        '24°C Bengaluru, KA'
-      ];
-      let weatherIdx = 0;
-      document.getElementById('weather-pill').addEventListener('click', () => {
-        weatherIdx = (weatherIdx + 1) % weatherLocations.length;
-        document.getElementById('weather-pill').textContent = weatherLocations[weatherIdx];
-        notify(`Location: ${weatherLocations[weatherIdx]}`);
-      });
-
-      // =========================================================================
-      // 6. SMART SEARCH & AI DIRECT LAUNCHER (Google, ChatGPT, Claude, Gemini, DeepSeek, YouTube)
-      // =========================================================================
-      const searchEngines = {
-        google: {
-          label: 'Google',
-          color: '#d94e34',
-          placeholder: 'Search Google or enter a web address...',
-          url: 'https://www.google.com/search?q='
-        },
-        chatgpt: {
-          label: 'ChatGPT',
-          color: '#10a37f',
-          placeholder: 'Ask ChatGPT anything (opens prompt directly)...',
-          url: 'https://chatgpt.com/?q='
-        },
-        claude: {
-          label: 'Claude',
-          color: '#d97757',
-          placeholder: 'Ask Claude AI (opens Claude)...',
-          url: 'https://claude.ai/new?q='
-        },
-        gemini: {
-          label: 'Gemini',
-          color: '#2563eb',
-          placeholder: 'Open Google Gemini AI...',
-          url: 'https://gemini.google.com/app?q='
-        },
-        deepseek: {
-          label: 'DeepSeek',
-          color: '#4f46e5',
-          placeholder: 'Open DeepSeek R1 / V3 Chat...',
-          url: 'https://chat.deepseek.com/?q='
-        },
-        youtube: {
-          label: 'YouTube',
-          color: '#ef4444',
-          placeholder: 'Search YouTube lectures, music, or videos...',
-          url: 'https://m.youtube.com/results?search_query='
-        },
-        perplexity: {
-          label: 'Perplexity',
-          color: '#0d9488',
-          placeholder: 'Deep research on Perplexity AI...',
-          url: 'https://www.perplexity.ai/search?q='
-        }
-      };
-
-      let currentEngine = 'google';
-      const searchInput = document.getElementById('universal-search-input');
-      const clearInputBtn = document.getElementById('btn-clear-input');
-      const enginePills = document.querySelectorAll('.eng-pill');
-
-      function selectEngine(key) {
-        if (!searchEngines[key]) return;
-        currentEngine = key;
-        const cfg = searchEngines[key];
-        document.getElementById('active-engine-label').textContent = cfg.label;
-        document.getElementById('active-engine-badge').style.backgroundColor = cfg.color;
-        searchInput.placeholder = cfg.placeholder;
-
-        enginePills.forEach((pill) => {
-          const isMatch = pill.getAttribute('data-eng') === key;
-          pill.classList.toggle('active', isMatch);
-        });
-      }
-
-      enginePills.forEach((pill) => {
-        pill.addEventListener('click', () => selectEngine(pill.getAttribute('data-eng')));
-      });
-
-      document.getElementById('btn-cycle-engine').addEventListener('click', () => {
-        const keys = Object.keys(searchEngines);
-        const next = keys[(keys.indexOf(currentEngine) + 1) % keys.length];
-        selectEngine(next);
-      });
-
-      searchInput.addEventListener('input', () => {
-        clearInputBtn.classList.toggle('hidden', searchInput.value.trim().length === 0);
-      });
-
-      clearInputBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearInputBtn.classList.add('hidden');
-        searchInput.focus();
-      });
-
-      document.getElementById('universal-search-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const raw = searchInput.value.trim();
-        const cfg = searchEngines[currentEngine];
-        if (!raw) {
-          // If input is empty and an AI platform is selected, open that platform directly!
-          const directBase = {
-            google: 'https://www.google.com',
-            chatgpt: 'https://chatgpt.com',
-            claude: 'https://claude.ai',
-            gemini: 'https://gemini.google.com',
-            deepseek: 'https://chat.deepseek.com',
-            youtube: 'https://m.youtube.com',
-            perplexity: 'https://www.perplexity.ai'
-          }[currentEngine];
-          window.open(directBase, '_blank', 'noopener,noreferrer');
-          return;
-        }
-        const looksLikeUrl = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i.test(raw);
-        const target = looksLikeUrl
-          ? (raw.startsWith('http') ? raw : `https://${raw}`)
-          : `${cfg.url}${encodeURIComponent(raw)}`;
-        window.open(target, '_blank', 'noopener,noreferrer');
-      });
-
-      // =========================================================================
-      // 7. AI MODELS, YOUTUBE & UTKARSH'S CODING LAUNCHPAD (With SVG Monograms)
-      // =========================================================================
-      const defaultLaunchpadItems = [
-        // AI Models
-        { id: 'ai-chatgpt', title: 'ChatGPT', sub: 'OpenAI', url: 'https://chatgpt.com', badge: 'GPT', cat: 'ai', accent: '#10a37f' },
-        { id: 'ai-claude', title: 'Claude', sub: 'Anthropic', url: 'https://claude.ai', badge: 'CL', cat: 'ai', accent: '#d97757' },
-        { id: 'ai-gemini', title: 'Gemini', sub: 'Google AI', url: 'https://gemini.google.com', badge: 'GM', cat: 'ai', accent: '#2563eb' },
-        { id: 'ai-deepseek', title: 'DeepSeek', sub: 'R1 / V3', url: 'https://chat.deepseek.com', badge: 'DS', cat: 'ai', accent: '#4f46e5' },
-        { id: 'ai-perplexity', title: 'Perplexity', sub: 'AI Search', url: 'https://www.perplexity.ai', badge: 'PX', cat: 'ai', accent: '#0d9488' },
-        { id: 'ai-hf', title: 'HuggingFace', sub: 'Models', url: 'https://huggingface.co', badge: 'HF', cat: 'ai', accent: '#eab308' },
-
-        // Utkarsh's Coding & Resume Profiles
-        { id: 'code-github', title: 'My GitHub', sub: 'Utkarsh-Singh-u', url: 'https://github.com/Utkarsh-Singh-u', badge: 'GH', cat: 'code', accent: '#18181b' },
-        { id: 'code-leetcode', title: 'LeetCode', sub: 'UTKARSH_710', url: 'https://leetcode.com/u/UTKARSH_710/', badge: 'LC', cat: 'code', accent: '#d97706' },
-        { id: 'code-gfg', title: 'Geeks4Geeks', sub: '1100+ Solved', url: 'https://www.geeksforgeeks.org/profile/utkarshsin6jeh', badge: 'GFG', cat: 'code', accent: '#16a34a' },
-        { id: 'code-linkedin', title: 'LinkedIn', sub: 'Utkarsh Singh', url: 'https://www.linkedin.com/in/utkarsh-singh-275866288/', badge: 'IN', cat: 'code', accent: '#0284c7' },
-
-        // Media & Daily
-        { id: 'daily-yt', title: 'YouTube', sub: 'Videos', url: 'https://m.youtube.com', badge: 'YT', cat: 'daily', accent: '#dc2626' },
-        { id: 'daily-gmail', title: 'Gmail', sub: 'Inbox', url: 'https://mail.google.com', badge: 'GM', cat: 'daily', accent: '#ea580c' }
-      ];
-
-      let launchpadItems = [];
-      let activeCategory = 'all';
-
-      try {
-        const saved = localStorage.getItem('utkarsh_launchpad_v2');
-        launchpadItems = saved ? JSON.parse(saved) : defaultLaunchpadItems.slice();
-      } catch (e) {
-        launchpadItems = defaultLaunchpadItems.slice();
-      }
-
-      function saveLaunchpad() {
-        try {
-          localStorage.setItem('utkarsh_launchpad_v2', JSON.stringify(launchpadItems));
-        } catch (e) {}
-      }
-
-      function renderLaunchpad() {
-        const grid = document.getElementById('launchpad-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
-
-        const filtered = activeCategory === 'all'
-          ? launchpadItems
-          : launchpadItems.filter(item => item.cat === activeCategory);
-
-        filtered.forEach((item) => {
-          const card = document.createElement('div');
-          card.className = 'group relative p-2.5 rounded-2xl bg-[var(--bg-subtle)] border border-[var(--border-hairline)] hover:border-[var(--border-strong)] transition flex flex-col items-center text-center cursor-pointer active:scale-95';
-          card.innerHTML = `
-            <button type="button" data-del="${item.id}" class="opacity-0 group-hover:opacity-100 absolute top-1 right-1 w-4 h-4 rounded-full bg-black/20 text-[var(--text-primary)] text-[9px] flex items-center justify-center" title="Remove">✕</button>
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center font-mono-code font-bold text-xs text-white shadow-sm mb-1.5" style="background-color: ${item.accent || '#d94e34'}">
-              ${item.badge}
-            </div>
-            <span class="font-heading font-bold text-[11px] text-[var(--text-primary)] truncate w-full">${item.title}</span>
-            <span class="text-[9px] text-[var(--text-muted)] truncate w-full">${item.sub || ''}</span>
-          `;
-
-          card.addEventListener('click', (e) => {
-            const delBtn = e.target.closest('[data-del]');
-            if (delBtn) {
-              e.stopPropagation();
-              launchpadItems = launchpadItems.filter(x => x.id !== item.id);
-              saveLaunchpad();
-              renderLaunchpad();
-              notify(`Removed ${item.title}`);
-              return;
-            }
-            window.open(item.url, '_blank', 'noopener,noreferrer');
-          });
-
-          grid.appendChild(card);
-        });
-      }
-
-      renderLaunchpad();
-
-      const catTabs = document.querySelectorAll('.cat-tab');
-      function setCategory(cat) {
-        activeCategory = cat;
-        catTabs.forEach((tab) => {
-          tab.classList.toggle('active', tab.getAttribute('data-cat') === cat);
-        });
-        renderLaunchpad();
-      }
-
-      catTabs.forEach((tab) => {
-        tab.addEventListener('click', () => setCategory(tab.getAttribute('data-cat')));
-      });
-
-      // Custom Shortcut Modal
-      const customModal = document.getElementById('modal-custom-shortcut');
-      document.getElementById('btn-open-custom-link').addEventListener('click', () => {
-        customModal.classList.remove('hidden');
-        customModal.classList.add('flex');
-      });
-      document.getElementById('btn-close-custom-modal').addEventListener('click', () => {
-        customModal.classList.add('hidden');
-        customModal.classList.remove('flex');
-      });
-      document.getElementById('btn-restore-defaults').addEventListener('click', () => {
-        launchpadItems = defaultLaunchpadItems.slice();
-        saveLaunchpad();
-        renderLaunchpad();
-        customModal.classList.add('hidden');
-        customModal.classList.remove('flex');
-        notify('Restored default AI & Coding links');
-      });
-      document.getElementById('form-custom-shortcut').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const title = document.getElementById('custom-title').value.trim();
-        let url = document.getElementById('custom-url').value.trim();
-        const badge = (document.getElementById('custom-badge').value.trim() || 'GO').toUpperCase();
-        const cat = document.getElementById('custom-cat').value;
-        if (!title || !url) return;
-        if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-
-        launchpadItems.push({
-          id: 'custom_' + Date.now(),
-          title,
-          sub: cat.toUpperCase(),
-          url,
-          badge,
-          cat,
-          accent: '#d94e34'
-        });
-        saveLaunchpad();
-        renderLaunchpad();
-        e.target.reset();
-        customModal.classList.add('hidden');
-        customModal.classList.remove('flex');
-        notify(`Added ${title}`);
-      });
-
-      // =========================================================================
-      // 8. 1-TAP CLIPBOARD COPY FOR UTKARSH'S RESUME LINKS
-      // =========================================================================
-      function copyTextToClipboard(text, label) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(text).then(() => {
-            notify(`Copied ${label}: ${text}`);
-          }).catch(() => fallbackCopy(text, label));
-        } else {
-          fallbackCopy(text, label);
-        }
-      }
-
-      function fallbackCopy(text, label) {
-        const ta = document.createElement('textarea');
-        ta.value = text;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.select();
-        try {
-          document.execCommand('copy');
-          notify(`Copied ${label}`);
-        } catch (e) {}
-        ta.remove();
-      }
-
-      document.querySelectorAll('.copy-chip').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const text = btn.getAttribute('data-copy');
-          const label = btn.getAttribute('data-label');
-          copyTextToClipboard(text, label);
-        });
-      });
-
-      // =========================================================================
-      // 9. DAILY DSA COUNTER & 180° 3D SCRATCHPAD
-      // =========================================================================
-      let dsaToday = 0;
-      try {
-        dsaToday = parseInt(localStorage.getItem('utkarsh_dsa_today') || '0', 10) || 0;
-      } catch (e) {}
-
-      function renderDsaCount() {
-        const total = 1100 + dsaToday;
-        document.getElementById('dsa-total-count').textContent = total.toLocaleString();
-        document.getElementById('dsa-today-count').textContent = String(dsaToday);
-      }
-      renderDsaCount();
-
-      document.getElementById('btn-dsa-plus').addEventListener('click', () => {
-        dsaToday++;
-        try { localStorage.setItem('utkarsh_dsa_today', String(dsaToday)); } catch (e) {}
-        renderDsaCount();
-        notify(`+1 DSA Problem logged! (${1100 + dsaToday} total)`);
-      });
-
-      document.getElementById('btn-dsa-minus').addEventListener('click', () => {
-        if (dsaToday > 0) {
-          dsaToday--;
-          try { localStorage.setItem('utkarsh_dsa_today', String(dsaToday)); } catch (e) {}
-          renderDsaCount();
-        }
-      });
-
-      // 3D Flip Scratchpad
-      const flipBody = document.getElementById('scratchpad-flip-body');
-      const noteInput = document.getElementById('scratchpad-input');
-      const notePreview = document.getElementById('scratchpad-preview');
-
-      try {
-        const savedMemo = localStorage.getItem('utkarsh_scratchpad_v2');
-        if (savedMemo) {
-          noteInput.value = savedMemo;
-          notePreview.textContent = savedMemo;
-        }
-      } catch (e) {}
-
-      document.getElementById('btn-flip-note-open').addEventListener('click', () => {
-        flipBody.classList.add('flipped');
-      });
-
-      document.getElementById('btn-flip-note-save').addEventListener('click', () => {
-        flipBody.classList.remove('flipped');
-        const val = noteInput.value.trim() || 'No note pinned.';
-        notePreview.textContent = val;
-        try { localStorage.setItem('utkarsh_scratchpad_v2', val); } catch (e) {}
-        notify('Scratchpad saved');
-      });
-
-      // =========================================================================
-      // 10. POMODORO FOCUS TIMER
-      // =========================================================================
-      let pomoRemaining = 25 * 60;
-      let pomoTimer = null;
-      const pomoClock = document.getElementById('pomo-clock');
-      const pomoStartBtn = document.getElementById('btn-pomo-start');
-      const pomoStatus = document.getElementById('pomo-status');
-
-      function updatePomoClock() {
-        const m = String(Math.floor(pomoRemaining / 60)).padStart(2, '0');
-        const s = String(pomoRemaining % 60).padStart(2, '0');
-        pomoClock.textContent = `${m}:${s}`;
-      }
-
-      pomoStartBtn.addEventListener('click', () => {
-        if (pomoTimer) {
-          clearInterval(pomoTimer);
-          pomoTimer = null;
-          pomoStartBtn.textContent = 'Resume';
-          pomoStatus.textContent = 'Timer paused';
-        } else {
-          pomoStartBtn.textContent = 'Pause';
-          pomoStatus.textContent = 'Deep work session active';
-          pomoTimer = setInterval(() => {
-            if (pomoRemaining > 0) {
-              pomoRemaining--;
-              updatePomoClock();
-            } else {
-              clearInterval(pomoTimer);
-              pomoTimer = null;
-              pomoStartBtn.textContent = 'Start';
-              pomoStatus.textContent = 'Session complete!';
-              notify('25m Deep Work Complete!');
-            }
-          }, 1000);
-        }
-      });
-
-      document.getElementById('btn-pomo-reset').addEventListener('click', () => {
-        if (pomoTimer) {
-          clearInterval(pomoTimer);
-          pomoTimer = null;
-        }
-        pomoRemaining = 25 * 60;
-        updatePomoClock();
-        pomoStartBtn.textContent = 'Start';
-        pomoStatus.textContent = 'Ready for coding / ML session';
-      });
-
-      // =========================================================================
-      // 11. BEZEL PREVIEW, BOTTOM DOCK & STANDALONE HTML DOWNLOAD
-      // =========================================================================
-      let bezelOn = false;
-      const viewportShell = document.getElementById('viewport-shell');
-      const cameraCutout = document.getElementById('camera-cutout');
-
-      document.getElementById('btn-toggle-bezel').addEventListener('click', () => {
-        bezelOn = !bezelOn;
-        viewportShell.classList.toggle('nord-bezel-frame', bezelOn);
-        cameraCutout.classList.toggle('hidden', !bezelOn);
-        notify(bezelOn ? 'OnePlus Nord CE 5 Bezel Frame ON' : 'Full-Screen Mobile View');
-      });
-
-      document.querySelectorAll('.nav-dock-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const target = btn.getAttribute('data-nav');
-          if (target === 'search') {
-            searchInput.focus();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else if (target === 'ai') {
-            setCategory('ai');
-          } else if (target === 'code') {
-            setCategory('code');
-          } else if (target === 'theme') {
-            const nextOrder = { light: 'dark', dark: 'auto', auto: 'light' };
-            setThemePreference(nextOrder[themePreference] || 'light');
-          }
-        });
-      });
-
-      document.getElementById('btn-save-page').addEventListener('click', () => {
-        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'utkarsh_nord_ce5_home.html';
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1500);
-        notify('Saved utkarsh_nord_ce5_home.html');
-      });
-
-      // Boot Theme + 3D Scene
-      applyTheme();
-      window.addEventListener('load', initKinetic3D);
-    })();
-  </script>
+<body>
+<canvas id="dots"></canvas>
+<div class="wrap">
+<header class="top">
+<div class="me"><div class="av"><svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><path d="M8 7v10a8 8 0 0016 0V7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><circle cx="24" cy="6" r="2.6" fill="var(--pop)"/></svg></div>Utkarsh Singh</div>
+<button class="mode" id="mode" aria-label="Change theme">Auto</button>
+</header>
+
+<section class="clock">
+<div class="time" id="time"></div>
+<div class="greet" id="greet"></div>
+<div class="date" id="date"></div>
+</section>
+
+<form id="sf" autocomplete="off">
+<input id="q" type="search" enterkeyhint="go" placeholder="Search Google…" aria-label="Search">
+<button class="go" type="submit">Go</button>
+</form>
+<div class="eng" id="eng" role="group" aria-label="Search with"></div>
+
+<h2>Shortcuts <em id="cnt"></em></h2>
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="grid" id="grid"></div>
+<form class="addf" id="addf" autocomplete="off">
+<input id="an" placeholder="Name" maxlength="14" required>
+<input id="au" type="url" placeholder="https://…" required>
+<button type="submit">Save shortcut</button>
+</form>
+<button class="clr" id="clr" hidden>Remove my shortcuts</button>
+
+<h2>About me</h2>
+<div class="stage"><div class="id" id="id">
+<div class="face front">
+<div><small>Developer · ML tinkerer</small></div>
+<div><h3>Utkarsh Singh</h3><p>I build things that think and things that help.</p></div>
+<div class="row"><div><small>Currently</small><br><b>Shipping</b></div><small>Veritas · FoodSync</small></div>
+</div>
+<div class="face back">
+<h4>What I work with</h4>
+<dl>
+<dt>AI / ML</dt><dd>Supervised &amp; unsupervised learning, deep learning, NLP, data analysis</dd>
+<dt>Languages</dt><dd>C++, JavaScript, Python, C, SQL, HTML, CSS</dd>
+<dt>Web</dt><dd>MERN stack, Tailwind, Bootstrap, FastAPI</dd>
+<dt>Core</dt><dd>DSA, OOPs, OS, Networks, DBMS, system design</dd>
+</dl>
+</div>
+</div></div>
+<p class="tip" id="tip">Tilt your phone, or drag the card. Tap to flip it.</p>
+<p class="bio">I like taking <mark>machine learning</mark> out of the notebook and putting it where people can use it, from a Chrome extension that checks if an image is AI-made to a platform that gets surplus food to the people who need it.</p>
+
+<h2>Things I’ve built</h2>
+<details class="proj"><summary><h3>Veritas<br>deepfake detector</h3><span class="pl">+</span></summary>
+<div class="in"><p>Tells real photos from AI-generated ones. A Swin Transformer classifier returns a verdict with a confidence score, a Chrome extension scans images on any page, and the model runs as its own service, separate from the app.</p>
+<div class="tags"><span>React</span><span>Node.js</span><span>MongoDB</span><span>FastAPI</span><span>Hugging Face</span></div>
+<a class="open" href="https://vertiasapi.vercel.app/" target="_blank" rel="noopener">Open Veritas</a></div></details>
+<details class="proj"><summary><h3>FoodSync<br>food waste platform</h3><span class="pl">+</span></summary>
+<div class="in"><p>Connects NGOs, surplus food providers and upcycling industries. Role-based sign-in, live listings and dashboards. It placed 2nd runner-up at REGEN Hackathon 2025.</p>
+<div class="tags"><span>MongoDB</span><span>Express</span><span>React</span><span>Node.js</span></div>
+<a class="open" href="https://food-sync-sigma.vercel.app/" target="_blank" rel="noopener">Open FoodSync</a></div></details>
+
+<h2>By the numbers</h2>
+<div class="nums">
+<div><strong data-n="1100" data-s="+">0</strong><span>problems solved on LeetCode &amp; GfG</span></div>
+<div><strong data-n="2">0</strong><span>live projects you can open right now</span></div>
+<div><strong data-n="2" data-s="nd">0</strong><span>runner-up, REGEN Hackathon 2025</span></div>
+</div>
+
+<h2>Find me</h2>
+<div class="find">
+<a href="https://github.com/Utkarsh-Singh-u" target="_blank" rel="noopener">GitHub<span>Utkarsh-Singh-u</span></a>
+<a href="https://www.linkedin.com/in/utkarsh-singh-275866288/" target="_blank" rel="noopener">LinkedIn<span>utkarsh-singh</span></a>
+<a href="https://leetcode.com/u/UTKARSH_710/" target="_blank" rel="noopener">LeetCode<span>UTKARSH_710</span></a>
+<a href="https://www.geeksforgeeks.org/profile/utkarshsin6jeh" target="_blank" rel="noopener">GeeksforGeeks<span>utkarshsin6jeh</span></a>
+<a href="https://drive.google.com/file/d/1VJdcJVR89HIQ20ofgyPtImDvR7dBA2s5/view" target="_blank" rel="noopener">TATA GenAI analytics certificate<span>Jan 2026</span></a>
+<a href="mailto:utkarshsingh7104@gmail.com">Email<span>utkarshsingh7104@gmail.com</span></a>
+</div>
+<footer>Made for my Nord CE 5. Theme follows the phone. Touch anywhere and the fish follow.</footer>
+</div>
+<canvas id="fish"></canvas>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)};
+function go(u){var a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();}
+var tt;function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('on')},2600);}
+function st(k,v){try{if(v===undefined)return localStorage.getItem(k);v===null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}return null;}
+
+/* clock + greeting */
+var D=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],M=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function tick(){var n=new Date(),h=n.getHours(),m=n.getMinutes();
+var h12=h%12||12;
+$('#time').innerHTML=h12+'<span class="c">:</span>'+(m<10?'0':'')+m+'<small>'+(h<12?'am':'pm')+'</small>';
+var g=h<5?'Still up, Utkarsh?':h<12?'Good morning, Utkarsh':h<17?'Good afternoon, Utkarsh':h<21?'Good evening, Utkarsh':'Winding down, Utkarsh?';
+$('#greet').textContent=g;$('#date').textContent=D[n.getDay()]+', '+n.getDate()+' '+M[n.getMonth()];}
+tick();setInterval(tick,10000);
+
+/* search with engine chips */
+var E=[{n:'Google',u:'https://www.google.com/search?q=',c:'#4285f4',q:1},{n:'YouTube',u:'https://www.youtube.com/results?search_query=',c:'#ff0033',q:1},{n:'ChatGPT',u:'https://chatgpt.com/?q=',c:'#10a37f',q:1},{n:'Claude',u:'https://claude.ai/new?q=',c:'#d97757',q:1},{n:'Gemini',u:'https://gemini.google.com/app',c:'#6b7cff'},{n:'DeepSeek',u:'https://chat.deepseek.com/',c:'#4d6bfe'},{n:'Perplexity',u:'https://www.perplexity.ai/search?q=',c:'#20808d',q:1}];
+var cur=+st('eng')||0;if(cur>=E.length)cur=0;
+function chips(){var w=$('#eng');w.innerHTML='';E.forEach(function(e,i){var b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed',i===cur);b.innerHTML='<i style="--c:'+e.c+'"></i>'+e.n;
+b.onclick=function(){cur=i;st('eng',String(i));chips();$('#q').placeholder=(i<1||i===1?'Search ':'Ask ')+e.n+'…';$('#q').focus();};w.appendChild(b);});
+var e=E[cur];$('#q').placeholder=(cur<2||cur===6?'Search ':'Ask ')+e.n+'…';}
+chips();
+$('#sf').onsubmit=function(ev){ev.preventDefault();var q=$('#q').value.trim(),e=E[cur];
+if(e.q){go(e.u+encodeURIComponent(q));}
+else{if(q&&navigator.clipboard){navigator.clipboard.writeText(q).then(function(){toast('Copied. Paste it in '+e.n)},function(){});}go(e.u);}};
+
+/* shortcuts */
+var S=[
+['AI','ChatGPT','https://chatgpt.com/','#10a37f'],['AI','Claude','https://claude.ai/','#d97757'],['AI','Gemini','https://gemini.google.com/','#5b6cf0'],['AI','DeepSeek','https://chat.deepseek.com/','#4d6bfe'],['AI','Perplexity','https://www.perplexity.ai/','#20808d'],['AI','Grok','https://grok.com/','#2b2b2b'],['AI','Hugging Face','https://huggingface.co/','#f5a623'],
+['Watch','YouTube','https://www.youtube.com/','#ff0033'],['Watch','YT Music','https://music.youtube.com/','#e8003b'],['Watch','Spotify','https://open.spotify.com/','#1db954'],
+['Code','GitHub','https://github.com/Utkarsh-Singh-u','#24292f'],['Code','LeetCode','https://leetcode.com/u/UTKARSH_710/','#ff9f0a'],['Code','GfG','https://www.geeksforgeeks.org/profile/utkarshsin6jeh','#2f8d46'],['Code','Kaggle','https://www.kaggle.com/','#20beff'],['Code','Colab','https://colab.research.google.com/','#f9ab00'],['Code','Stack Overflow','https://stackoverflow.com/','#f48024'],
+['Work','Gmail','https://mail.google.com/','#d93025'],['Work','Drive','https://drive.google.com/','#1a73e8'],['Work','LinkedIn','https://www.linkedin.com/in/utkarsh-singh-275866288/','#0a66c2'],['Work','Calendar','https://calendar.google.com/','#4285f4']];
+var IC={'ChatGPT':'<path d="M12 3l7 4v8l-7 4-7-4V7z"/><path d="M12 3v8l7 4M12 11L5 15"/>','Claude':'<path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6L5.6 18.4" stroke-width="2.3"/>','Gemini':'<path fill="#fff" stroke="none" d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"/>','DeepSeek':'<path fill="#fff" stroke="none" d="M3 13c3-5 9-6 14-3l4-3-1 5 1 5-4-2c-5 3-11 2-14-2z"/><circle cx="9" cy="11.5" r="1.1" fill="currentColor" stroke="none"/>','Perplexity':'<path d="M12 2v20M5 7l7 5 7-5M5 17l7-5 7 5M5 7v10M19 7v10"/>','Grok':'<circle cx="12" cy="12" r="8"/><path d="M6 18L18 6"/>','Hugging Face':'<circle cx="12" cy="12" r="9" fill="#fff" stroke="none"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14c2 2.5 6 2.5 8 0" stroke="currentColor"/>','YouTube':'<rect x="2.5" y="6" width="19" height="12" rx="4" fill="#fff" stroke="none"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor" stroke="none"/>','YT Music':'<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z" fill="#fff" stroke="none"/>','Spotify':'<path d="M5 9c5-2 10-1.5 14 1M6 13c4-1.5 8-1 11 1M7 16.8c3-1 6-.7 8.5.8" stroke-width="2.2"/>','GitHub':'<circle cx="7" cy="6" r="2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="9" r="2"/><path d="M7 8v8M17 11c0 4-6 2-10 5"/>','LeetCode':'<path d="M15 5L8 12l7 7M13 12h8" stroke-width="2.3"/>','GfG':'<path d="M17 9a6 6 0 1 0 0 6h-4" stroke-width="2.2"/>','Kaggle':'<path d="M8 4v16M8 13l8-9M10.5 11l6.5 9" stroke-width="2.2"/>','Colab':'<path d="M8 8a4 4 0 1 0 0 8M16 8a4 4 0 1 1 0 8"/>','Stack Overflow':'<path d="M5 14v6h14v-6M8 17h8M8.5 13.5l7.5 1.5M10 10l7 3.5M12.5 6.5l6 5"/>','Gmail':'<rect x="3" y="5.5" width="18" height="13" rx="3"/><path d="M4 8l8 6 8-6"/>','Drive':'<path d="M9 4h6l6 10-3 5H6l-3-5z"/><path d="M9 4l6 10h6M15 4L9 14H3"/>','LinkedIn':'<g fill="#fff" stroke="none"><rect x="4" y="9.5" width="3.4" height="10.5" rx="1"/><circle cx="5.7" cy="5.8" r="2"/><path d="M10 9.5h3.2v1.6c.7-1.2 1.9-1.9 3.5-1.9 3 0 3.6 2 3.6 4.6V20H17v-5.4c0-1.3-.2-2.3-1.6-2.3s-2 1-2 2.3V20H10z"/></g>','Calendar':'<rect x="4" y="5" width="16" height="15" rx="3.5"/><path d="M4 10h16M9 3v4M15 3v4"/>','_':'<path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/>'};
+function ic(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--c)" aria-hidden="true">'+(IC[n]||IC._)+'</svg>';}
+var tabs=['All','AI','Watch','Code','Work','Mine'],tab=st('tab')||'All';if(tabs.indexOf(tab)<0)tab='All';
+function mine(){try{return JSON.parse(st('mine')||'[]')}catch(e){return[]}}
+function tabsUI(){var w=$('#tabs');w.innerHTML='';tabs.forEach(function(t){var b=document.createElement('button');b.textContent=t;b.setAttribute('role','tab');b.setAttribute('aria-selected',t===tab);b.onclick=function(){tab=t;st('tab',t);tabsUI();render();};w.appendChild(b);});}
+function render(){var g=$('#grid');g.innerHTML='';
+var list=S.filter(function(s){return tab==='All'||s[0]===tab}).concat(tab==='All'||tab==='Mine'?mine().map(function(m){return['Mine',m[0],m[1],'#7a4dff']}):[]);
+list.forEach(function(s,i){var a=document.createElement('a');a.className='t';a.href=s[2];a.target='_blank';a.rel='noopener';a.style.setProperty('--i',i);a.style.setProperty('--c',s[3]);
+var b=document.createElement('b');b.innerHTML=ic(s[1]);var l=document.createElement('span');l.textContent=s[1];a.appendChild(b);a.appendChild(l);g.appendChild(a);});
+var ad=document.createElement('a');ad.className='t add';ad.href='#';ad.style.setProperty('--i',list.length);ad.innerHTML='<b>+</b><span>Add</span>';
+ad.onclick=function(e){e.preventDefault();$('#addf').classList.toggle('on');$('#an').focus();};g.appendChild(ad);
+$('#cnt').textContent=list.length+' links';$('#clr').hidden=!mine().length;}
+tabsUI();render();
+$('#addf').onsubmit=function(e){e.preventDefault();var n=$('#an').value.trim(),u=$('#au').value.trim();if(!/^https?:\/\//i.test(u)){toast('Link must start with https://');return;}
+var m=mine();m.push([n,u]);st('mine',JSON.stringify(m));$('#an').value='';$('#au').value='';$('#addf').classList.remove('on');tab='Mine';st('tab',tab);tabsUI();render();toast(n+' added');};
+$('#clr').onclick=function(){st('mine',null);render();toast('Removed');};
+
+/* theme: auto follows the phone */
+var modes=['auto','light','dark'],mi=Math.max(0,modes.indexOf(st('theme')||'auto'));
+function applyMode(){var r=document.documentElement;if(modes[mi]==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',modes[mi]);
+$('#mode').textContent=['Auto','Light','Dark'][mi];}
+applyMode();
+$('#mode').onclick=function(){mi=(mi+1)%3;st('theme',modes[mi]);applyMode();toast(['Following your phone','Light theme','Dark theme'][mi]);};
+
+/* ID card: tilt with phone or finger, tap to flip */
+var card=$('#id'),flip=0,rx=0,ry=0,tx=0,ty=0,seen=true,drag=false,moved=0,sx=0,sy=0,gy=false;
+function setT(x,y){tx=Math.max(-1,Math.min(1,x));ty=Math.max(-1,Math.min(1,y));}
+addEventListener('deviceorientation',function(e){if(e.gamma==null||drag)return;if(!gy){gy=true;$('#tip').textContent='Tilt your phone. Tap the card to flip it.';}setT(e.gamma/28,(e.beta-55)/28);});
+card.addEventListener('pointerdown',function(e){drag=true;moved=0;sx=e.clientX;sy=e.clientY;});
+addEventListener('pointermove',function(e){if(!drag)return;var b=card.getBoundingClientRect();moved+=Math.abs(e.movementX||0)+Math.abs(e.movementY||0);setT(((e.clientX-b.left)/b.width-.5)*2,((e.clientY-b.top)/b.height-.5)*2);});
+addEventListener('pointerup',function(){if(!drag)return;drag=false;if(moved<8){flip^=1;if(navigator.vibrate)navigator.vibrate(10);}setT(0,0);});
+new IntersectionObserver(function(es){seen=es[0].isIntersecting;}).observe(card);
+(function loop(){requestAnimationFrame(loop);if(!seen)return;
+rx+=(ty*-14-rx)*.1;ry+=(tx*18-ry)*.1;
+card.style.transform='rotateX('+rx+'deg) rotateY('+(ry+flip*180)+'deg)';
+var f=card.firstElementChild;f.style.setProperty('--gx',50+tx*40+'%');f.style.setProperty('--gy',50+ty*40+'%');f.style.setProperty('--ang',tx*160+'deg');})();
+
+/* living dots + 3D fish that follow the finger */
+(function(){
+var reduce=matchMedia('(prefers-reduced-motion:reduce)').matches,dc=$('#dots'),dg=dc.getContext('2d'),W=innerWidth,H=innerHeight,GAP=24,dots=[],fing={x:W/2,y:H/2,on:0,last:-9999},cs=getComputedStyle(document.documentElement),cB='',cA='',fr=0,T=window.THREE,fishes=[],R3,S3,C3;
+function mk(){W=innerWidth;H=innerHeight;var d=Math.min(devicePixelRatio||1,2);dc.width=W*d;dc.height=H*d;dg.setTransform(d,0,0,d,0,0);dots=[];for(var y=GAP/2;y<H+GAP;y+=GAP)for(var x=GAP/2;x<W+GAP;x+=GAP)dots.push([x,y,0,0]);
+if(R3){R3.setSize(W,H,false);C3.right=W;C3.bottom=-H;C3.updateProjectionMatrix();}}
+if(T&&!reduce){
+R3=new T.WebGLRenderer({canvas:$('#fish'),alpha:true,antialias:true});R3.setPixelRatio(Math.min(devicePixelRatio||1,2));
+S3=new T.Scene();C3=new T.OrthographicCamera(0,W,0,-H,-300,300);
+S3.add(new T.HemisphereLight(0xffffff,0x6f86ff,.95));var dl=new T.DirectionalLight(0xffffff,.9);dl.position.set(-.5,.8,1);S3.add(dl);
+[0xff7a3d,0xffb020,0x2dd4bf,0x4f7cff,0xff5c8a,0xff9a56,0x7c5cff].forEach(function(c,i,a){
+var m=new T.MeshStandardMaterial({color:c,roughness:.35,metalness:.15}),g=new T.Group(),inn=new T.Group(),s=9+Math.random()*5;
+var body=new T.Mesh(new T.SphereGeometry(1,20,14),m);body.scale.set(1.7,.85,.6);
+var tail=new T.Group(),tm=new T.Mesh(new T.ConeGeometry(.9,1.5,4),m);tm.rotation.z=-Math.PI/2;tm.scale.set(1,1,.25);tm.position.x=-.75;tail.add(tm);tail.position.x=-1.5;
+var fin=new T.Mesh(new T.ConeGeometry(.45,1,4),m);fin.position.set(-.1,.85,0);fin.scale.z=.25;
+var eye=new T.Mesh(new T.SphereGeometry(.14,8,8),new T.MeshBasicMaterial({color:0x111111}));eye.position.set(1.05,.25,.5);var e2=eye.clone();e2.position.z=-.5;
+inn.add(body,tail,fin,eye,e2);g.add(inn);g.scale.setScalar(s);S3.add(g);
+fishes.push({g:g,inn:inn,tail:tail,x:Math.random()*W,y:Math.random()*H,vx:0,vy:0,a:0,fl:0,turn:0,ph:Math.random()*6,off:i/a.length*6.283,rad:34+Math.random()*50,tx:W/2,ty:H/2,wt:0});});}
+mk();addEventListener('resize',mk);
+function fp(e){var t=e.touches&&e.touches[0]||e;fing.x=t.clientX;fing.y=t.clientY;fing.on=1;fing.last=performance.now();}
+function fe(){fing.on=0;fing.last=performance.now();}
+addEventListener('touchstart',fp,{passive:true});addEventListener('touchmove',fp,{passive:true});addEventListener('touchend',fe,{passive:true});addEventListener('touchcancel',fe,{passive:true});addEventListener('mousemove',fp);
+var last=performance.now(),t0=0;
+function frame(now){if(!reduce)requestAnimationFrame(frame);if(document.hidden)return;
+var dt=Math.min(2,(now-last)/16.7)||1;last=now;t0+=dt;
+var follow=fing.on||now-fing.last<1800;
+fishes.forEach(function(f){
+if(follow){var an=f.off+t0*.02;f.tx=fing.x+Math.cos(an)*f.rad;f.ty=fing.y+Math.sin(an)*f.rad*.8;}
+else{f.wt-=dt;if(f.wt<=0){f.tx=40+Math.random()*(W-80);f.ty=60+Math.random()*(H-120);f.wt=180+Math.random()*240;}}
+var ddx=f.tx-f.x,ddy=f.ty-f.y,d=Math.hypot(ddx,ddy)||1,sp=Math.min(follow?5.2:1.9,d*.07+.4);
+f.vx+=(ddx/d*sp-f.vx)*.06*dt;f.vy+=(ddy/d*sp-f.vy)*.06*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;
+var spd=Math.hypot(f.vx,f.vy);
+if(spd>.15){var da=Math.atan2(-f.vy,f.vx)-f.a;da=Math.atan2(Math.sin(da),Math.cos(da));f.a+=da*.12*dt;f.turn=da;}
+f.fl+=((Math.cos(f.a)<0?1:0)-f.fl)*.12*dt;f.ph+=(.15+spd*.12)*dt;
+f.g.position.set(f.x,-f.y,0);f.g.rotation.z=f.a;f.inn.rotation.x=f.fl*Math.PI+f.turn*.8;f.inn.rotation.y=Math.sin(f.ph)*.3;f.tail.rotation.z=Math.sin(f.ph*1.3)*.6;});
+if(R3)R3.render(S3,C3);
+var P=[];if(fing.on)P.push([fing.x,fing.y,110,26]);fishes.forEach(function(f){P.push([f.x,f.y,56,16]);});
+if(fr++%90===0){cB=cs.getPropertyValue('--dot').trim();cA=cs.getPropertyValue('--acc').trim();}
+dg.clearRect(0,0,W,H);dg.fillStyle=cB;dg.beginPath();var gl=[];
+for(var i=0;i<dots.length;i++){var p=dots[i],ox=0,oy=0,g=0;
+for(var k=0;k<P.length;k++){var q=P[k],ax=p[0]-q[0],ay=p[1]-q[1],dd=ax*ax+ay*ay;if(dd<q[2]*q[2]){var di=Math.sqrt(dd)||1,u=1-di/q[2];ox+=ax/di*u*u*q[3];oy+=ay/di*u*u*q[3];if(u>g)g=u;}}
+p[2]+=(ox-p[2])*.18*dt;p[3]+=(oy-p[3])*.18*dt;var x=p[0]+p[2],y=p[1]+p[3];
+if(g>.08)gl.push(x,y,g);else{dg.moveTo(x+1.4,y);dg.arc(x,y,1.4,0,6.283);}}
+dg.fill();dg.fillStyle=cA;
+for(var j=0;j<gl.length;j+=3){dg.globalAlpha=.35+.65*gl[j+2];dg.beginPath();dg.arc(gl[j],gl[j+1],1.4+gl[j+2]*2.2,0,6.283);dg.fill();}
+dg.globalAlpha=1;}
+frame(last);
+})();
+/* counters when scrolled into view */
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;io.unobserve(e.target);
+var el=e.target,to=+el.dataset.n,d=+el.dataset.d||0,s=el.dataset.s||'',t0=performance.now();
+(function f(now){var p=Math.min(1,(now-t0)/1400),v=to*(1-Math.pow(1-p,3));el.textContent=v.toFixed(d)+s;if(p<1)requestAnimationFrame(f);})(t0);});},{threshold:.6});
+document.querySelectorAll('[data-n]').forEach(function(el){io.observe(el);});
+})();
+</script>
 </body>
 </html>
